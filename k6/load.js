@@ -13,6 +13,6 @@ const BASE = __ENV.TARGET_URL || "http://host.docker.internal:3000";
 
 export default function () {
     http.get(`${BASE}/ping`);
-    
+
     sleep(0.05);
 }
