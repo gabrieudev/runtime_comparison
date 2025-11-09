@@ -41,11 +41,11 @@ chmod +x scripts/*.sh
 ./scripts/run_experiment.sh
 ```
 
-> ATENÇÃO: A execução completa do experimento dura cerca de 13 horas e 30 minutos.
+> ATENÇÃO: A execução completa do experimento durará cerca de 13 horas e 30 minutos.
 
 <h3>Gerar gráficos (opcional)</h3>
 
-Após a execução completa, todos os resultados estarão armazenados em `/results` em formato JSON. Caso queira gerar os gráficos automaticamente via script Python, execute os comandos:
+Após a execução completa, todos os resultados estarão armazenados em `/results` em formato JSON. Caso queira gerar os gráficos automaticamente via script Python, execute os comandos abaixo e as imagens serão geradas dentro de `/results/plots`.
 
 ```bash
 # Instala dependências necessárias
