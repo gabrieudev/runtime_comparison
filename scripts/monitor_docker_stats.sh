@@ -1,30 +1,52 @@
 #!/usr/bin/env bash
-CONTAINER=$1
-OUT=$2
-INTERVAL=${3:-1}
+set -euo pipefail
 
-echo "timestamp,cpu_percent,mem_usage,mem_limit,mem_percent,net_io,block_io,pids" > "$OUT"
+CONTAINER="$1"
+OUT_CSV="$2"
+INTERVAL="${3:-0.5}"
+
+if [ -z "$CONTAINER" ] || [ -z "$OUT_CSV" ]; then
+    echo "Uso: $0 <container> <output_csv> [interval_seconds]"
+    exit 1
+fi
+
+# Cabeçalho CSV
+echo "timestamp,cpu_percent,mem_usage_mb" > "$OUT_CSV"
+
+# Função para converter memória para MB (docker stats pode retornar KiB/MiB/GiB)
+to_mb() {
+    local value="$1"
+    local unit="$2"
+    
+    case "$unit" in
+        KiB) awk "BEGIN { printf \"%.3f\", $value / 1024 }" ;;
+        MiB) awk "BEGIN { printf \"%.3f\", $value }" ;;
+        GiB) awk "BEGIN { printf \"%.3f\", $value * 1024 }" ;;
+        *)   echo "0" ;;
+    esac
+}
 
 while true; do
-  if [ -z "$(docker ps --filter "name=$CONTAINER" --format '{{.Names}}')" ]; then
-    # container não existe
-    echo "$(date +%s),0,0,0,0,0,0,0" >> "$OUT"
-    sleep $INTERVAL
-    continue
-  fi
-
-  line=$(docker stats --no-stream --format "{{.CPUPerc}},{{.MemUsage}},{{.MemPerc}},{{.NetIO}},{{.BlockIO}},{{.PIDs}}" "$CONTAINER" 2>/dev/null)
-  if [ -z "$line" ]; then
-    echo "$(date +%s),0,0,0,0,0,0,0" >> "$OUT"
-  else
-    cpu=$(echo "$line" | awk -F',' '{print $1}')
-    memUsage=$(echo "$line" | awk -F',' '{print $2}')
-    memPerc=$(echo "$line" | awk -F',' '{print $3}')
-    netio=$(echo "$line" | awk -F',' '{print $4}')
-    blockio=$(echo "$line" | awk -F',' '{print $5}')
-    pids=$(echo "$line" | awk -F',' '{print $6}')
-    echo "$(date +%s),${cpu},\"${memUsage}\",,${memPerc},\"${netio}\",\"${blockio}\",${pids}" >> "$OUT"
-  fi
-
-  sleep $INTERVAL
+    # Formato: "cpu%|mem_used"
+    STATS=$(docker stats --no-stream --format '{{.CPUPerc}}|{{.MemUsage}}' "$CONTAINER" 2>/dev/null || true)
+    
+    # Se o container não existir mais, encerra monitor
+    if [ -z "$STATS" ]; then
+        break
+    fi
+    
+    CPU_RAW=$(echo "$STATS" | cut -d'|' -f1 | tr -d '%')
+    MEM_RAW=$(echo "$STATS" | cut -d'|' -f2 | cut -d'/' -f1 | xargs)
+    
+    # MEM_RAW exemplo: "23.45MiB"
+    MEM_VALUE=$(echo "$MEM_RAW" | sed -E 's/^([0-9.]+).*/\1/')
+    MEM_UNIT=$(echo "$MEM_RAW" | sed -E 's/^[0-9.]+([A-Za-z]+).*/\1/')
+    
+    MEM_MB=$(to_mb "$MEM_VALUE" "$MEM_UNIT")
+    
+    TIMESTAMP=$(date +%s.%N)
+    
+    echo "${TIMESTAMP},${CPU_RAW},${MEM_MB}" >> "$OUT_CSV"
+    
+    sleep "$INTERVAL"
 done

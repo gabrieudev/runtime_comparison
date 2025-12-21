@@ -1,87 +1,108 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Variáveis de ambiente
-RESULTS_DIR=${RESULTS_DIR:-./results}
-VUS_LIST=${VUS_LIST:-"50 200 500"}
-DURATION=${DURATION:-"30m"}
-REPS=${REPS:-3}
-BASE_PORT=${BASE_PORT:-3000}
-K6_IMG=${K6_IMG:-loadimpact/k6:latest}
+# ---------------- CONFIG ----------------
+CPUS="${CPUS:-2}"
+MEM="${MEM:-2g}"
+REPS="${REPS:-2}"
+VUS_LIST=(10 50 100)
+DURATION="${DURATION:-30s}"
+OUTDIR="results"
 
-declare -A IMAGES=( ["node"]="tcc-node:latest" ["deno"]="tcc-deno:latest" ["bun"]="tcc-bun:latest" )
-declare -A PORTS=( ["node"]=$BASE_PORT ["deno"]=$((BASE_PORT)) ["bun"]=$((BASE_PORT)) )
+K6_IMAGE="grafana/k6:latest"
+MONITOR_SCRIPT="./scripts/monitor_docker_stats.sh"
+K6_SCRIPT="./k6/load.js"
 
-mkdir -p "$RESULTS_DIR"
+IMG_NODE="perf_node"
+IMG_BUN="perf_bun"
+IMG_DENO="perf_deno"
 
-echo "Construindo imagens (se necessário)..."
-docker build -t tcc-node:latest ./runtimes/node
-docker build -t tcc-deno:latest ./runtimes/deno
-docker build -t tcc-bun:latest ./runtimes/bun
+DOCKERFILE_NODE="./images/Dockerfile.node"
+DOCKERFILE_BUN="./images/Dockerfile.bun"
+DOCKERFILE_DENO="./images/Dockerfile.deno"
 
-for runtime in node deno bun; do
-    for vus in $VUS_LIST; do
-        for rep in $(seq 1 $REPS); do
-            echo "=== runtime=$runtime | vus=$vus | rep=$rep ==="
-            port=${PORTS[$runtime]}
-            img=${IMAGES[$runtime]}
-            cname="tcc-${runtime}"
+runtimes=(node bun deno)
+ports=(3001 3002 3003)
+
+mkdir -p "$OUTDIR"
+
+# ---------------- BUILD ----------------
+echo "Buildando imagens..."
+docker build -f "$DOCKERFILE_NODE" -t "$IMG_NODE" .
+docker build -f "$DOCKERFILE_BUN" -t "$IMG_BUN" .
+docker build -f "$DOCKERFILE_DENO" -t "$IMG_DENO" .
+
+# ---------------- HELPERS ----------------
+wait_container() {
+    local cname="$1"
+    for _ in {1..30}; do
+        status=$(docker inspect -f '{{.State.Health.Status}}' "$cname" 2>/dev/null || echo "")
+        if [ -z "$status" ] || [ "$status" = "healthy" ]; then
+            return 0
+        fi
+        sleep 1
+    done
+    echo "Container $cname não ficou healthy"
+}
+
+# ---------------- EXPERIMENTOS ----------------
+for i in "${!runtimes[@]}"; do
+    rt="${runtimes[$i]}"
+    port="${ports[$i]}"
+    img="IMG_${rt^^}"
+    image="${!img}"
+    
+    echo ""
+    echo "===== INICIANDO TESTES: runtime=$rt ====="
+    
+    for vus in "${VUS_LIST[@]}"; do
+        for rep in $(seq 1 "$REPS"); do
+            echo "runtime=$rt | vus=$vus | rep=$rep"
             
-            # remove o container antigo (se existir)
-            docker rm -f $cname >/dev/null 2>&1 || true
+            DEST="$OUTDIR/$rt/vus_$vus/rep_$rep"
+            mkdir -p "$DEST"
             
-            # inicia o container
-            echo "Iniciando container $cname a partir de $img na porta $port..."
-            docker run --rm -d --name "$cname" -p ${port}:3000 -e PORT=3000 "$img"
+            cname="${rt}_test_${vus}_${rep}"
             
-            # espera o container ficar pronto
-            echo "Aguardando o container se tornar pronto..."
-            ./scripts/wait_for_url.sh "http://localhost:${port}/ping" 30
-            if [ $? -ne 0 ]; then
-                echo "O container não ficou pronto. Coletando logs:"
-                docker logs $cname || true
-                docker rm -f $cname || true
-                exit 1
-            fi
+            # --- Iniciar container da API ---
+            docker run -d \
+            --name "$cname" \
+            --cpus="$CPUS" \
+            --memory="$MEM" \
+            -p "$port:3000" \
+            "$image"
             
-            # prepara o diretório de resultados
-            outdir="${RESULTS_DIR}/${runtime}/vus_${vus}/rep_${rep}"
-            mkdir -p "$outdir"
+            wait_container "$cname"
+            sleep 1
             
-            # inicia o monitor (docker stats)
-            monitor_file="${outdir}/monitor.csv"
-            ./scripts/monitor_docker_stats.sh "$cname" "$monitor_file" 1 &
-            MONITOR_PID=$!
-            echo "PID do monitor: $MONITOR_PID"
+            # --- Iniciar monitor ---
+            "$MONITOR_SCRIPT" "$cname" "$DEST/docker_stats.csv" 0.5 &
+            MON_PID=$!
             
-            # inicia o k6 via imagem docker (escreve JSON no diretório de resultados)
-            echo "Executando k6 (VUS=$vus, duração=$DURATION)..."
+            # --- Iniciar container do k6 ---
+            echo "Executando k6 (container)..."
             docker run --rm \
-            -v "$PWD/k6":/scripts \
-            -v "$PWD/results/${runtime}/vus_${vus}/rep_${rep}":/data \
-            loadimpact/k6 run /scripts/load.js \
+            --network host \
+            -v "$(pwd):/work" \
+            -w /work \
+            "$K6_IMAGE" run \
             --vus "$vus" \
-            --duration "${DURATION}" \
-            --summary-export=/data/k6_${runtime}_vus${vus}_rep${rep}.json
+            --duration "$DURATION" \
+            --env TARGET_URL="http://localhost:$port" \
+            --out json="$DEST/k6_results.json" \
+            "$K6_SCRIPT" > "$DEST/k6_stdout.log" 2>&1 || true
             
+            sleep 1
+            kill "$MON_PID" || true
             
-            # para o monitor
-            echo "Parando monitor..."
-            kill $MONITOR_PID || true
-            wait $MONITOR_PID 2>/dev/null || true
+            docker logs "$cname" > "$DEST/container.log" 2>&1 || true
+            docker rm -f "$cname" >/dev/null
             
-            # coleta logs do container
-            docker logs "$cname" > "${outdir}/container.log" 2>&1 || true
-            
-            # para/remove o container
-            docker rm -f "$cname" >/dev/null 2>&1 || true
-            
-            echo "Resultados salvos em ${outdir}"
-            echo "Pausando 5s para a proxima execução..."
-            sleep 5
+            echo "Resultados em $DEST"
         done
     done
 done
 
-echo "Todas as execuções concluídas. Resultados em ${RESULTS_DIR}."
-
+echo ""
+echo "Todos os experimentos finalizados."
+echo "Resultados em: $OUTDIR"

@@ -1,0 +1,10 @@
+FROM oven/bun:alpine
+WORKDIR /app
+RUN apk add --no-cache curl
+COPY src/server.mjs ./server.mjs
+ENV PORT=3000
+ENV RUNTIME_NAME=bun
+EXPOSE 3000
+HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:3000/ping || exit 1
+CMD ["bun", "run", "server.mjs"]
