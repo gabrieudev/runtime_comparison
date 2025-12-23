@@ -1,0 +1,22 @@
+{
+    "name": "runtime_comparison",
+    "version": "1.0.0",
+    "description": "Comparação de performance entre Node.js, Bun e Deno com PostgreSQL e Hono",
+    "type": "module",
+    "main": "src/server.js",
+    "scripts": {
+        "start": "node src/server.js",
+        "dev": "node --watch src/server.js",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "pg": "^8.11.3",
+        "hono": "^4.3.7",
+        "@hono/node-server": "^1.10.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "devDependencies": {}
+}

@@ -3,11 +3,28 @@ from pathlib import Path
 import sys
 import json
 import math
+from datetime import datetime
+
 import numpy as np
 import pandas as pd
 from scipy import stats
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
+
+# ========================= LOGGING SIMPLES =========================
+
+def _log(level, msg):
+    ts = datetime.now().strftime("%H:%M:%S")
+    print(f"[{ts}] {level:<5} | {msg}")
+
+def log_info(msg):
+    _log("INFO", msg)
+
+def log_warn(msg):
+    _log("WARN", msg)
+
+def log_error(msg):
+    _log("ERROR", msg)
 
 # ========================= CONFIGURAÇÃO GLOBAL =========================
 
@@ -56,15 +73,6 @@ I18N = {
     }
 }
 
-def log_info(msg):
-    print(f"[INFO] {msg}")
-
-def log_warn(msg):
-    print(f"[WARN] {msg}")
-
-def log_error(msg):
-    print(f"[ERROR] {msg}")
-
 # ========================= UTILITÁRIOS =========================
 
 def ic95(arr):
@@ -88,10 +96,11 @@ def _fmt_thousands(x, _):
 def _fmt_decimal(x, _):
     return f"{x:.1f}"
 
-# ========================= PARSING K6 (JSON EM LINHAS) =========================
+# ========================= PARSING K6 =========================
 
 def parse_k6_json(path: Path):
     if not path or not path.exists():
+        log_warn(f"k6_results.json não encontrado: {path}")
         return {}
 
     durations = []
@@ -116,6 +125,7 @@ def parse_k6_json(path: Path):
                 reqs += int(val)
 
     if not durations:
+        log_warn(f"Arquivo k6 sem métricas válidas: {path}")
         return {}
 
     return {
@@ -133,8 +143,8 @@ def parse_monitor_csv(path: Path):
         log_warn(f"Falha ao ler monitor CSV {path}: {e}")
         return {}
 
+    log_info(f"Lendo monitor: {path.name} | colunas={list(df.columns)}")
     out = {}
-    log_info(f"Lendo monitor: {path} | colunas={list(df.columns)}")
 
     # ================= CPU =================
     if "cpu_percent" in df.columns:
@@ -158,13 +168,12 @@ def parse_monitor_csv(path: Path):
 
             if valid > 0:
                 out["memory"] = df["mem_usage_mb"].mean()
-                sample = df["mem_usage_mb"].dropna().head(3).tolist()
                 log_info(
-                    f"Memória média (MB): {out['memory']:.2f} "
-                    f"(válidos {valid}/{len(df)} | exemplos {sample})"
+                    f"Memória média: {out['memory']:.2f} MB "
+                    f"(válidos {valid}/{len(df)})"
                 )
             else:
-                log_warn("Coluna mem_usage_mb existe, mas sem valores válidos")
+                log_warn("mem_usage_mb sem valores válidos")
         except Exception as e:
             log_warn(f"Erro ao processar mem_usage_mb: {e}")
 
@@ -187,12 +196,12 @@ def parse_monitor_csv(path: Path):
 
         if valid > 0:
             out["memory"] = df["mem_mib"].mean()
-            log_info(f"Memória média (MiB): {out['memory']:.2f}")
+            log_info(f"Memória média: {out['memory']:.2f} MiB")
         else:
-            log_warn("mem_usage presente, mas nenhum valor válido")
+            log_warn("mem_usage presente, mas inválido")
 
     else:
-        log_warn("Nenhuma coluna de memória encontrada no monitor CSV")
+        log_warn("Nenhuma coluna de memória encontrada")
 
     # ================= DURAÇÃO =================
     if "timestamp" in df.columns:
@@ -208,20 +217,24 @@ def parse_monitor_csv(path: Path):
 
 def collect(root):
     rows = []
+    root = Path(root)
 
-    for runtime_dir in Path(root).iterdir():
+    log_info(f"Coletando dados em: {root}")
+
+    for runtime_dir in root.iterdir():
         if not runtime_dir.is_dir():
             continue
 
+        log_info(f"Runtime detectado: {runtime_dir.name}")
+
         for vus_dir in runtime_dir.iterdir():
             for rep_dir in vus_dir.iterdir():
-                k6_file = rep_dir / "k6_results.json"
-                k6 = parse_k6_json(k6_file)
-
-                mon_file = rep_dir / "docker_stats.csv"
-                monitor = parse_monitor_csv(mon_file) if mon_file.exists() else {}
+                k6 = parse_k6_json(rep_dir / "k6_results.json")
+                monitor = parse_monitor_csv(rep_dir / "docker_stats.csv") \
+                    if (rep_dir / "docker_stats.csv").exists() else {}
 
                 if not k6 or "duration" not in monitor:
+                    log_warn(f"Amostra inválida ignorada: {rep_dir}")
                     continue
 
                 rows.append({
@@ -239,6 +252,7 @@ def collect(root):
 # ========================= AGREGAÇÃO =========================
 
 def summarize(df):
+    log_info("Gerando resumo estatístico")
     return df.groupby(["runtime", "vus"]).agg(
         lat_p95_mean=("lat_p95", "mean"),
         lat_p95_ic95=("lat_p95", ic95),
@@ -316,6 +330,7 @@ def plot_grouped_bars(df, metric, ic, out, ylabel, lang, thousands=False):
         FuncFormatter(_fmt_thousands if thousands else _fmt_decimal)
     )
 
+    # ====== RÓTULOS ACIMA DAS BARRAS ======
     fig.canvas.draw()
     y_max = ax.get_ylim()[1]
 
@@ -327,7 +342,11 @@ def plot_grouped_bars(df, metric, ic, out, ylabel, lang, thousands=False):
 
             y_pos = h + err + (0.02 * y_max)
 
-            label = f"{h:,.0f}".replace(",", ".") if thousands else f"{h:.1f}"
+            label = (
+                f"{h:,.0f}".replace(",", ".")
+                if thousands
+                else f"{h:.1f}"
+            )
 
             ax.annotate(
                 label,
@@ -348,26 +367,20 @@ def plot_grouped_bars(df, metric, ic, out, ylabel, lang, thousands=False):
 # ========================= MAIN =========================
 
 def generate(root):
-    log_info(f"Iniciando geração de relatório em: {root}")
+    log_info("Iniciando geração de relatório")
 
     df = collect(root)
-
     if df.empty:
-        log_error("Nenhum dado coletado. Abortando geração de gráficos.")
+        log_error("Nenhum dado coletado. Abortando.")
         return
 
-    log_info(f"Total de amostras coletadas: {len(df)}")
+    log_info(f"Amostras coletadas: {len(df)}")
 
     summary = summarize(df)
-
-    if summary.empty:
-        log_error("Resumo estatístico vazio. Verifique dados de entrada.")
-        return
-
     log_info(
-        f"Resumo gerado com {len(summary)} linhas "
-        f"({summary['runtime'].nunique()} runtimes, "
-        f"{summary['vus'].nunique()} níveis de VUs)"
+        f"Resumo: {len(summary)} linhas | "
+        f"{summary['runtime'].nunique()} runtimes | "
+        f"{summary['vus'].nunique()} níveis de VUs"
     )
 
     out = Path(root) / "plots"
@@ -375,19 +388,14 @@ def generate(root):
 
     for lang in ("pt", "en"):
         log_info(f"Gerando gráficos ({lang})")
-
         plot_grouped_bars(summary, "lat_p95_mean", "lat_p95_ic95",
                           out / "p95_latency", I18N[lang]["p95_latency"], lang)
-
         plot_grouped_bars(summary, "lat_mean_mean", "lat_mean_ic95",
                           out / "mean_latency", I18N[lang]["mean_latency"], lang)
-
         plot_grouped_bars(summary, "throughput_mean", "throughput_ic95",
                           out / "throughput", I18N[lang]["throughput"], lang, True)
-
         plot_grouped_bars(summary, "cpu_mean", "cpu_ic95",
                           out / "mean_cpu_usage", I18N[lang]["cpu"], lang)
-
         plot_grouped_bars(summary, "memory_mean", "memory_ic95",
                           out / "mean_memory_usage", I18N[lang]["memory"], lang, True)
 

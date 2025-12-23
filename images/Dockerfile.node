@@ -1,10 +1,24 @@
 FROM node:20-alpine
 WORKDIR /app
-RUN apk add --no-cache curl
-COPY src/server.mjs ./server.mjs
+
+RUN apk add --no-cache curl postgresql-client
+
+COPY package.json .
+RUN npm install --omit=dev
+
+COPY src/ ./src/
+
 ENV PORT=3000
 ENV RUNTIME_NAME=node
+ENV DB_HOST=postgres
+ENV DB_PORT=5432
+ENV DB_NAME=perfdb
+ENV DB_USER=postgres
+ENV DB_PASSWORD=postgres
+
 EXPOSE 3000
-HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \
+
+HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
   CMD curl -f http://localhost:3000/ping || exit 1
-CMD ["node", "server.mjs"]
+
+CMD ["node", "src/server.js"]

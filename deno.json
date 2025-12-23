@@ -1,0 +1,29 @@
+{
+    "name": "runtime_comparison",
+    "version": "1.0.0",
+    "description": "Comparação de performance entre Node.js, Bun e Deno com PostgreSQL e Hono",
+    "exports": "./src/server.js",
+    "tasks": {
+        "start": "deno run --allow-net --allow-env --allow-read --unstable src/server.js",
+        "dev": "deno run --watch --allow-net --allow-env --allow-read --unstable src/server.js",
+        "check": "deno check src/server.js"
+    },
+    "imports": {
+        "pg": "npm:pg@^8.11.3",
+        "hono": "npm:hono@^4.3.7"
+    },
+    "compilerOptions": {
+        "lib": ["deno.window"],
+        "strict": true
+    },
+    "fmt": {
+        "singleQuote": false,
+        "semiColons": true,
+        "indentWidth": 4
+    },
+    "lint": {
+        "rules": {
+            "tags": ["recommended"]
+        }
+    }
+}
