@@ -28,7 +28,7 @@ def log_error(msg):
 
 # ========================= CONFIGURAÇÃO GLOBAL =========================
 
-PNG_DPI = 300
+PNG_DPI = 600
 PDF_DPI = 600
 
 plt.rcParams.update({
@@ -96,42 +96,82 @@ def _fmt_thousands(x, _):
 def _fmt_decimal(x, _):
     return f"{x:.1f}"
 
-# ========================= PARSING K6 =========================
+# ========================= PARSING K6 (resumo) =========================
 
 def parse_k6_json(path: Path):
     if not path or not path.exists():
-        log_warn(f"k6_results.json não encontrado: {path}")
+        log_warn(f"k6_summary.json não encontrado: {path}")
         return {}
 
-    durations = []
-    reqs = 0
-
-    with open(path, "r") as f:
-        for line in f:
-            try:
-                j = json.loads(line)
-            except Exception:
-                continue
-
-            if j.get("type") != "Point":
-                continue
-
-            metric = j.get("metric")
-            val = j.get("data", {}).get("value")
-
-            if metric == "http_req_duration":
-                durations.append(val)
-            elif metric == "http_reqs":
-                reqs += int(val)
-
-    if not durations:
-        log_warn(f"Arquivo k6 sem métricas válidas: {path}")
+    try:
+        with open(path, "r") as f:
+            data = json.load(f)
+    except Exception as e:
+        log_warn(f"Falha ao ler JSON do k6 ({path}): {e}")
         return {}
+
+    metrics = data.get("metrics", {})
+    if not metrics:
+        log_warn(f"Arquivo k6_summary.json sem seção 'metrics': {path}")
+        return {}
+
+    def _get_metric_avg(metric_name):
+        m = metrics.get(metric_name)
+        if isinstance(m, dict) and "avg" in m:
+            return m.get("avg")
+        alt = metrics.get(f"{metric_name}{{expected_response:true}}")
+        if isinstance(alt, dict) and "avg" in alt:
+            return alt.get("avg")
+        return None
+
+    def _get_metric_p95(metric_name):
+        m = metrics.get(metric_name)
+        if isinstance(m, dict) and "p(95)" in m:
+            return m.get("p(95)")
+        alt = metrics.get(f"{metric_name}{{expected_response:true}}")
+        if isinstance(alt, dict) and "p(95)" in alt:
+            return alt.get("p(95)")
+        return None
+
+    lat_mean = _get_metric_avg("http_req_duration")
+    if lat_mean is None:
+        lat_mean = _get_metric_avg("http_req_duration{expected_response:true}")
+    lat_p95 = _get_metric_p95("http_req_duration")
+    if lat_p95 is None:
+        lat_p95 = _get_metric_p95("http_req_duration{expected_response:true}")
+
+    http_reqs = None
+    http_reqs_m = metrics.get("http_reqs")
+    if isinstance(http_reqs_m, dict) and "count" in http_reqs_m:
+        http_reqs = int(http_reqs_m.get("count", 0))
+    else:
+        iters = metrics.get("iterations")
+        if isinstance(iters, dict) and "count" in iters:
+            http_reqs = int(iters.get("count", 0))
+
+    if lat_mean is None and lat_p95 is None and http_reqs is None:
+        log_warn(f"k6_summary.json sem métricas utilizáveis: {path}")
+        return {}
+
+    try:
+        lat_mean_v = float(lat_mean) if lat_mean is not None else float("nan")
+    except Exception:
+        lat_mean_v = float("nan")
+
+    try:
+        lat_p95_v = float(lat_p95) if lat_p95 is not None else float("nan")
+    except Exception:
+        lat_p95_v = float("nan")
+
+    try:
+        http_reqs_v = int(http_reqs) if http_reqs is not None else 0
+    except Exception:
+        http_reqs_v = 0
 
     return {
-        "lat_mean": float(np.mean(durations)),
-        "lat_p95": float(np.percentile(durations, 95)),
-        "http_reqs": reqs,
+        "lat_mean": lat_mean_v,
+        "lat_p95": lat_p95_v,
+        "http_reqs": http_reqs_v,
     }
 
 # ========================= MONITOR CSV =========================
@@ -229,7 +269,7 @@ def collect(root):
 
         for vus_dir in runtime_dir.iterdir():
             for rep_dir in vus_dir.iterdir():
-                k6 = parse_k6_json(rep_dir / "k6_results.json")
+                k6 = parse_k6_json(rep_dir / "k6_summary.json")
                 monitor = parse_monitor_csv(rep_dir / "docker_stats.csv") \
                     if (rep_dir / "docker_stats.csv").exists() else {}
 
@@ -237,12 +277,17 @@ def collect(root):
                     log_warn(f"Amostra inválida ignorada: {rep_dir}")
                     continue
 
+                duration = monitor.get("duration", None)
+                if not duration or duration <= 0:
+                    log_warn(f"Duração inválida no monitor para {rep_dir}")
+                    continue
+
                 rows.append({
                     "runtime": runtime_dir.name,
                     "vus": int(vus_dir.name.replace("vus_", "")),
-                    "lat_mean": k6["lat_mean"],
-                    "lat_p95": k6["lat_p95"],
-                    "throughput": k6["http_reqs"] / monitor["duration"],
+                    "lat_mean": float(k6.get("lat_mean", float("nan"))),
+                    "lat_p95": float(k6.get("lat_p95", float("nan"))),
+                    "throughput": float(k6.get("http_reqs", 0)) / float(duration),
                     "cpu": monitor.get("cpu"),
                     "memory": monitor.get("memory"),
                 })

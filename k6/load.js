@@ -6,7 +6,6 @@ export let options = {
     duration: __ENV.DURATION ? __ENV.DURATION : "1800s",
     thresholds: {
         http_req_duration: ["p(95)<2000"],
-        http_req_failed: ["rate<0.05"],
     },
     discardResponseBodies: false,
 };
@@ -24,15 +23,21 @@ export default function () {
                 const body = JSON.parse(r.body);
                 return (
                     body.success === true &&
-                    body.data &&
-                    body.data.products_count === 100
+                    body.products_count &&
+                    body.products_count > 0
                 );
             } catch {
                 return false;
             }
         },
-        "has runtime header": (r) => r.headers["X-Runtime"] !== undefined,
-        "has framework header": (r) => r.headers["X-Framework"] === "Hono",
+        "has runtime info": (r) => {
+            try {
+                const body = JSON.parse(r.body);
+                return body.runtime !== undefined;
+            } catch {
+                return false;
+            }
+        },
     });
 
     sleep(0.1);

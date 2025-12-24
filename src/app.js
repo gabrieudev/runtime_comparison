@@ -1,7 +1,5 @@
 import { Hono } from "hono";
 
-// CONFIGURAÇÃO
-
 export const RUNTIME_NAME =
     globalThis?.process?.env?.RUNTIME_NAME ??
     (typeof Deno !== "undefined"
@@ -11,37 +9,53 @@ export const RUNTIME_NAME =
         : "node");
 
 const DB_CONFIG = {
-    host: process.env.DB_HOST || "postgres",
-    port: Number(process.env.DB_PORT || 5432),
-    database: process.env.DB_NAME || "perfdb",
-    user: process.env.DB_USER || "postgres",
-    password: process.env.DB_PASSWORD || "postgres",
+    host: process?.env?.DB_HOST ?? "postgres",
+    port: Number(process?.env?.DB_PORT ?? 5432),
+    database: process?.env?.DB_NAME ?? "perfdb",
+    user: process?.env?.DB_USER ?? "postgres",
+    password: process?.env?.DB_PASSWORD ?? "postgres",
     max: 1000,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
 };
 
-// BANCO
-
-let pool;
+let pool = null;
 let dbConnected = false;
 
 async function initDB() {
-    if (dbConnected) return;
+    if (dbConnected && pool) return;
 
-    const { Pool } =
-        typeof Deno !== "undefined"
-            ? await import("npm:pg")
-            : await import("pg");
+    try {
+        const pgModule =
+            typeof Deno !== "undefined"
+                ? await import("npm:pg")
+                : await import("pg");
 
-    pool = new Pool(DB_CONFIG);
+        const { Pool } = pgModule;
+        if (!Pool) throw new Error("Pool não encontrado no módulo pg");
 
-    const client = await pool.connect();
-    client.release();
-    dbConnected = true;
+        pool = new Pool(DB_CONFIG);
+
+        const client = await pool.connect();
+        try {
+            await client.query("SELECT 1");
+            dbConnected = true;
+            console.log(`[${RUNTIME_NAME}] Conectado ao banco com sucesso`);
+        } finally {
+            client.release();
+        }
+    } catch (err) {
+        console.error(`[${RUNTIME_NAME}] Falha ao conectar no banco:`, err);
+        pool = null;
+        dbConnected = false;
+    }
 }
 
 async function getRandomProducts(limit = 100) {
+    if (!pool) {
+        throw new Error("Pool do banco não inicializado");
+    }
+
     const start = Date.now();
 
     const result = await pool.query(
@@ -60,16 +74,12 @@ async function getRandomProducts(limit = 100) {
     };
 }
 
-// CONTROLADOR DA API
-
 export const app = new Hono();
 
-app.get("/ping", async (c) => {
-    return c.json({
-        pong: true,
-        runtime: RUNTIME_NAME,
-        db_connected: dbConnected,
-        timestamp: new Date().toISOString(),
+app.get("/ping", (c) => {
+    return c.text("pong", 200, {
+        "X-Runtime": RUNTIME_NAME,
+        "X-Framework": "Hono",
     });
 });
 
@@ -77,7 +87,22 @@ app.get("/api/products", async (c) => {
     try {
         if (!dbConnected) await initDB();
 
-        const limit = Number(c.req.query("limit") || 100);
+        if (!dbConnected || !pool) {
+            return c.json(
+                {
+                    success: false,
+                    runtime: RUNTIME_NAME,
+                    error: "Banco de dados indisponível",
+                },
+                503,
+                {
+                    "X-Runtime": RUNTIME_NAME,
+                    "X-Framework": "Hono",
+                }
+            );
+        }
+
+        const limit = Number(c.req.query("limit") ?? 100);
         const result = await getRandomProducts(limit);
 
         return c.json(
@@ -89,17 +114,25 @@ app.get("/api/products", async (c) => {
             },
             200,
             {
+                "X-Runtime": RUNTIME_NAME,
+                "X-Framework": "Hono",
                 "x-processing-time": `${result.queryTime}ms`,
             }
         );
     } catch (err) {
+        console.error(`[${RUNTIME_NAME}] Erro na rota /api/products:`, err);
+
         return c.json(
             {
                 success: false,
-                error: err.message,
                 runtime: RUNTIME_NAME,
+                error: String(err.message ?? err),
             },
-            500
+            500,
+            {
+                "X-Runtime": RUNTIME_NAME,
+                "X-Framework": "Hono",
+            }
         );
     }
 });

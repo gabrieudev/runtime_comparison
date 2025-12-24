@@ -12,18 +12,22 @@ services:
             - "5432:5432"
         volumes:
             - postgres_data:/var/lib/postgresql/data
+            - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
         networks:
             - perf_network
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            test: ["CMD-SHELL", "pg_isready -U postgres -d perfdb"]
             interval: 10s
             timeout: 5s
             retries: 5
         command: >
             postgres
-            -c max_connections=200
+            -c max_connections=1000
             -c shared_buffers=256MB
             -c effective_cache_size=1GB
+            -c fsync=off
+            -c synchronous_commit=off
+            -c full_page_writes=off
 
 networks:
     perf_network:

@@ -5,42 +5,54 @@ const PORT = Number(
         (typeof Deno !== "undefined" ? Deno.env.get?.("PORT") ?? 3000 : 3000)
 );
 
-console.log(
-    `=== ${
-        typeof Deno !== "undefined"
-            ? "Deno"
-            : typeof Bun !== "undefined"
-            ? "Bun"
-            : "Node"
-    } ===`
-);
+const RUNTIME =
+    typeof Deno !== "undefined"
+        ? "Deno"
+        : typeof Bun !== "undefined"
+        ? "Bun"
+        : "Node";
+
+console.log(`=== ${RUNTIME} ===`);
 console.log(`Servidor iniciando na porta ${PORT}`);
 
-// Bun
-if (typeof Bun !== "undefined") {
-    Bun.serve({
-        port: PORT,
-        fetch: app.fetch,
-    });
+// Iniciar servidor
 
-    console.log(`Bun -> http://localhost:${PORT}`);
-}
+try {
+    // Bun
+    if (typeof Bun !== "undefined") {
+        Bun.serve({
+            port: PORT,
+            fetch: app.fetch,
+        });
 
-// Deno
-else if (typeof Deno !== "undefined") {
-    Deno.serve({ port: PORT }, app.fetch);
+        console.log(`Bun -> http://localhost:${PORT}`);
+    }
 
-    console.log(`Deno -> http://localhost:${PORT}`);
-}
+    // Deno
+    else if (typeof Deno !== "undefined") {
+        Deno.serve({ port: PORT }, app.fetch);
 
-// Node
-else {
-    const { serve } = await import("@hono/node-server");
+        console.log(`Deno -> http://localhost:${PORT}`);
+    }
 
-    serve({
-        fetch: app.fetch,
-        port: PORT,
-    });
+    // Node
+    else {
+        (async () => {
+            try {
+                const { serve } = await import("@hono/node-server");
 
-    console.log(`Node -> http://localhost:${PORT}`);
+                serve({
+                    fetch: app.fetch,
+                    port: PORT,
+                });
+
+                console.log(`Node -> http://localhost:${PORT}`);
+            } catch (err) {
+                console.error("Erro ao iniciar servidor Node:", err);
+                process.exit(1);
+            }
+        })();
+    }
+} catch (err) {
+    console.error("Erro fatal ao iniciar servidor:", err);
 }
