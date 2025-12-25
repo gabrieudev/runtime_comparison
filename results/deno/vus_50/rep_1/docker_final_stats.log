@@ -1,0 +1,2 @@
+CONTAINER ID   NAME             CPU %     MEM USAGE / LIMIT   MEM %     NET I/O          BLOCK I/O         PIDS
+cdcc2b1af1c2   deno_test_50_1   0.01%     175MiB / 1GiB       17.09%    3.26GB / 355MB   72.7MB / 5.99MB   28
