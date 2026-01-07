@@ -1,9 +1,9 @@
-#!/usr/bin/env python3
 from pathlib import Path
 import sys
 import json
 import math
 from datetime import datetime
+import re
 
 import numpy as np
 import pandas as pd
@@ -96,7 +96,7 @@ def _fmt_thousands(x, _):
 def _fmt_decimal(x, _):
     return f"{x:.1f}"
 
-# ========================= PARSING K6 (resumo) =========================
+# ========================= PARSING DO K6 DE PERFORMANCE =========================
 
 def parse_k6_json(path: Path):
     if not path or not path.exists():
@@ -174,6 +174,71 @@ def parse_k6_json(path: Path):
         "http_reqs": http_reqs_v,
     }
 
+# ========================= PARSING DO K6 DE SEGURANÇA  =========================
+
+def _sanitize_label(s: str) -> str:
+    s = s.strip()
+    s = re.sub(r'^\{(.*)\}$', r'\1', s)
+    s = re.sub(r'[:=,"]', ' ', s)
+    s = re.sub(r'\s+', '_', s)
+    s = re.sub(r'[^0-9A-Za-z_]', '_', s)
+    return s.strip('_').lower() or "check"
+
+def parse_k6_security(path: Path):
+    if not path or not path.exists():
+        return {}
+
+    try:
+        with open(path, "r") as f:
+            data = json.load(f)
+    except Exception as e:
+        log_warn(f"Falha ao ler k6 security JSON ({path}): {e}")
+        return {}
+
+    metrics = data.get("metrics", {})
+    if not isinstance(metrics, dict) or not metrics:
+        log_warn(f"k6 security JSON sem métricas: {path}")
+        return {}
+
+    out = {}
+    for mname, mval in metrics.items():
+        if not isinstance(mval, dict):
+            continue
+
+        if mname == "checks" or mname.startswith("checks"):
+            label = "checks"
+            if "{" in mname and "}" in mname:
+                inner = mname[mname.find("{")+1:mname.find("}")]
+                label = _sanitize_label(inner)
+            else:
+                if "name" in mval and isinstance(mval["name"], str):
+                    label = _sanitize_label(mval["name"])
+            if "passes" in mval:
+                out[f"check_{label}_passes"] = int(mval.get("passes", 0))
+            if "fails" in mval:
+                out[f"check_{label}_fails"] = int(mval.get("fails", 0))
+            if "rate" in mval:
+                out[f"check_{label}_rate"] = float(mval.get("rate", 0.0))
+            if "count" in mval:
+                out[f"check_{label}_count"] = int(mval.get("count", 0))
+            if "value" in mval:
+                try:
+                    out[f"check_{label}_value"] = float(mval.get("value"))
+                except Exception:
+                    out[f"check_{label}_value"] = str(mval.get("value"))
+        else:
+            if "check" in mname.lower():
+                label = _sanitize_label(mname.replace("checks", "").replace("check", ""))
+                if not label:
+                    label = _sanitize_label(mname)
+                if "passes" in mval:
+                    out[f"check_{label}_passes"] = int(mval.get("passes", 0))
+                if "fails" in mval:
+                    out[f"check_{label}_fails"] = int(mval.get("fails", 0))
+                if "rate" in mval:
+                    out[f"check_{label}_rate"] = float(mval.get("rate", 0.0))
+    return out
+
 # ========================= MONITOR CSV =========================
 
 def parse_monitor_csv(path: Path):
@@ -186,7 +251,6 @@ def parse_monitor_csv(path: Path):
     log_info(f"Lendo monitor: {path.name} | colunas={list(df.columns)}")
     out = {}
 
-    # ================= CPU =================
     if "cpu_percent" in df.columns:
         try:
             df["cpu_percent"] = (
@@ -200,7 +264,6 @@ def parse_monitor_csv(path: Path):
         except Exception as e:
             log_warn(f"Erro ao processar CPU: {e}")
 
-    # ================= MEMÓRIA =================
     if "mem_usage_mb" in df.columns:
         try:
             df["mem_usage_mb"] = pd.to_numeric(df["mem_usage_mb"], errors="coerce")
@@ -243,7 +306,6 @@ def parse_monitor_csv(path: Path):
     else:
         log_warn("Nenhuma coluna de memória encontrada")
 
-    # ================= DURAÇÃO =================
     if "timestamp" in df.columns:
         try:
             out["duration"] = df["timestamp"].max() - df["timestamp"].min()
@@ -253,10 +315,77 @@ def parse_monitor_csv(path: Path):
 
     return out
 
+# ========================= PARSERS ECOSISTEMA =========================
+
+def parse_github_repo(path: Path):
+    try:
+        with open(path, "r") as f:
+            j = json.load(f)
+    except Exception as e:
+        log_warn(f"Falha ao ler github JSON {path}: {e}")
+        return {}
+    out = {}
+    out["github_full_name"] = j.get("full_name")
+    out["github_stars"] = j.get("stargazers_count")
+    out["github_forks"] = j.get("forks_count") or j.get("forks")
+    out["github_watchers"] = j.get("subscribers_count") or j.get("watchers_count") or j.get("watchers")
+    out["github_open_issues"] = j.get("open_issues_count") or j.get("open_issues")
+    out["github_pushed_at"] = j.get("pushed_at")
+    out["github_updated_at"] = j.get("updated_at")
+    return out
+
+def parse_npm_total(path: Path):
+    try:
+        txt = path.read_text().strip()
+        if txt == "":
+            return {}
+        try:
+            v = int(txt)
+            return {"npm_total_packages": v}
+        except Exception:
+            try:
+                j = json.loads(txt)
+                if "total_rows" in j:
+                    return {"npm_total_packages": int(j.get("total_rows", 0))}
+                if "total" in j:
+                    return {"npm_total_packages": int(j.get("total", 0))}
+            except Exception:
+                pass
+    except Exception as e:
+        log_warn(f"Erro ao ler npm total {path}: {e}")
+    return {}
+
+def parse_registry_pkg(path: Path):
+    try:
+        with open(path, "r") as f:
+            j = json.load(f)
+    except Exception:
+        return {}
+    out = {}
+    if "time" in j and isinstance(j["time"], dict):
+        out["rep_pkg_last_release"] = j["time"].get("modified")
+    elif "dist-tags" in j and isinstance(j["dist-tags"], dict) and "latest" in j["dist-tags"]:
+        out["rep_pkg_latest_tag"] = j["dist-tags"].get("latest")
+    return out
+
+def parse_deno_modules(path: Path):
+    out = {}
+    try:
+        if (path.parent / "deno_total_modules.txt").exists():
+            txt = (path.parent / "deno_total_modules.txt").read_text().strip()
+            out["deno_total_modules"] = int(txt) if txt.isdigit() else None
+        else:
+            lines = path.read_text().splitlines()
+            out["deno_total_modules"] = len([l for l in lines if l.strip()])
+    except Exception as e:
+        log_warn(f"Erro ao ler deno modules em {path}: {e}")
+    return out
+
 # ========================= COLETA =========================
 
 def collect(root):
-    rows = []
+    perf_rows = []
+    sec_rows = []
     root = Path(root)
 
     log_info(f"Coletando dados em: {root}")
@@ -265,34 +394,174 @@ def collect(root):
         if not runtime_dir.is_dir():
             continue
 
-        log_info(f"Runtime detectado: {runtime_dir.name}")
+        log_info(f"Runtime detectado (perf pass): {runtime_dir.name}")
 
         for vus_dir in runtime_dir.iterdir():
+            if not vus_dir.is_dir():
+                continue
             for rep_dir in vus_dir.iterdir():
+                if not rep_dir.is_dir():
+                    continue
+
                 k6 = parse_k6_json(rep_dir / "k6_summary.json")
                 monitor = parse_monitor_csv(rep_dir / "docker_stats.csv") \
                     if (rep_dir / "docker_stats.csv").exists() else {}
 
-                if not k6 or "duration" not in monitor:
-                    log_warn(f"Amostra inválida ignorada: {rep_dir}")
-                    continue
+                if k6 and "duration" in monitor:
+                    duration = monitor.get("duration", None)
+                    if duration and duration > 0:
+                        perf_rows.append({
+                            "runtime": runtime_dir.name,
+                            "vus": int(vus_dir.name.replace("vus_", "")),
+                            "lat_mean": float(k6.get("lat_mean", float("nan"))),
+                            "lat_p95": float(k6.get("lat_p95", float("nan"))),
+                            "throughput": float(k6.get("http_reqs", 0)) / float(duration),
+                            "cpu": monitor.get("cpu"),
+                            "memory": monitor.get("memory"),
+                        })
+                    else:
+                        log_warn(f"Duração inválida no monitor para {rep_dir} (performance ignorada)")
+                else:
+                    if not k6:
+                        log_warn(f"k6 summary ausente ou inválido para performance em {rep_dir}")
+                    if "duration" not in monitor:
+                        log_warn(f"Monitor ausente/sem duration para {rep_dir} (performance ignorada)")
 
-                duration = monitor.get("duration", None)
-                if not duration or duration <= 0:
-                    log_warn(f"Duração inválida no monitor para {rep_dir}")
-                    continue
+    for runtime_dir in root.iterdir():
+        if not runtime_dir.is_dir():
+            continue
 
-                rows.append({
-                    "runtime": runtime_dir.name,
-                    "vus": int(vus_dir.name.replace("vus_", "")),
-                    "lat_mean": float(k6.get("lat_mean", float("nan"))),
-                    "lat_p95": float(k6.get("lat_p95", float("nan"))),
-                    "throughput": float(k6.get("http_reqs", 0)) / float(duration),
-                    "cpu": monitor.get("cpu"),
-                    "memory": monitor.get("memory"),
-                })
+        rt_name = runtime_dir.name
+        runtime_sec_path = runtime_dir / "k6_security_summary.json"
 
-    return pd.DataFrame(rows)
+        if runtime_sec_path.exists():
+            log_info(f"Encontrado summary de segurança para runtime {rt_name}: {runtime_sec_path}")
+            sec_data = parse_k6_security(runtime_sec_path)
+
+            monitor_info = {}
+            monitor_file_a = runtime_dir / "k6_security_monitor.csv"
+            if monitor_file_a.exists():
+                monitor_info = parse_monitor_csv(monitor_file_a)
+                log_info(f"Usando monitor (k6_security_monitor.csv) para {rt_name}")
+            else:
+                found = False
+                for vus_dir in runtime_dir.iterdir():
+                    if not vus_dir.is_dir():
+                        continue
+                    for rep_dir in vus_dir.iterdir():
+                        candidate = rep_dir / "docker_stats.csv"
+                        if candidate.exists():
+                            monitor_info = parse_monitor_csv(candidate)
+                            log_info(f"Usando monitor fallback {candidate} para {rt_name}")
+                            found = True
+                            break
+                    if found:
+                        break
+
+            sec_row = {
+                "runtime": rt_name,
+                "vus": 0,
+                "rep": "runtime_security",
+                "result_path": str(runtime_sec_path),
+            }
+            if monitor_info:
+                sec_row["monitor_duration"] = monitor_info.get("duration")
+                sec_row["cpu"] = monitor_info.get("cpu")
+                sec_row["memory"] = monitor_info.get("memory")
+
+            sec_row.update(sec_data)
+            sec_rows.append(sec_row)
+        else:
+            log_info(f"Sem summary de segurança para runtime {rt_name} (arquivo esperado: {runtime_sec_path})")
+
+    perf_df = pd.DataFrame(perf_rows)
+    sec_df = pd.DataFrame(sec_rows)
+    return perf_df, sec_df
+
+# ========================= COLETA ECOSSISTEMA =========================
+
+def collect_ecosystem(root):
+    rows = []
+    root = Path(root)
+    log_info("Coletando dados do ecossistema (por runtime)")
+
+    for runtime_dir in root.iterdir():
+        if not runtime_dir.is_dir():
+            continue
+
+        eco_dir = runtime_dir / "ecosystem"
+        if not eco_dir.exists():
+            eco_dir = runtime_dir / "eco_raw"
+        if not eco_dir.exists():
+            log_info(f"Sem diretório de ecossistema para {runtime_dir.name} (pula)")
+            continue
+
+        row = {"runtime": runtime_dir.name}
+        gh = {}
+        gh_path = eco_dir / "github_repo.json"
+        if gh_path.exists():
+            gh = parse_github_repo(gh_path)
+            row.update(gh)
+        else:
+            log_info(f"Sem github_repo.json em {eco_dir}")
+
+        npm_path = eco_dir / "npm_total_packages.txt"
+        if npm_path.exists():
+            npm = parse_npm_total(npm_path)
+            row.update(npm)
+        else:
+            rep_path = eco_dir / "npm_replicate.json"
+            if rep_path.exists():
+                npm = parse_npm_total(rep_path)
+                row.update(npm)
+
+        reg_files = list(eco_dir.glob("registry_*.json"))
+        if reg_files:
+            reg = parse_registry_pkg(reg_files[0])
+            row.update(reg)
+
+        deno_mods = eco_dir / "deno_modules.txt"
+        if deno_mods.exists():
+            deno = parse_deno_modules(deno_mods)
+            row.update(deno)
+        else:
+            deno_total = eco_dir / "deno_total_modules.txt"
+            if deno_total.exists():
+                try:
+                    v = deno_total.read_text().strip()
+                    row["deno_total_modules"] = int(v) if v.isdigit() else None
+                except Exception:
+                    pass
+
+        rows.append(row)
+
+    if not rows:
+        log_info("Nenhum dado de ecossistema coletado")
+        return pd.DataFrame()
+
+    df = pd.DataFrame(rows)
+
+    for col in ("github_pushed_at", "github_updated_at", "rep_pkg_last_release"):
+        if col in df.columns:
+            try:
+                df[col] = pd.to_datetime(df[col], errors="coerce")
+            except Exception:
+                pass
+
+    preferred = [
+        "runtime",
+        "github_full_name",
+        "github_stars",
+        "github_forks",
+        "github_watchers",
+        "github_open_issues",
+        "github_pushed_at",
+        "npm_total_packages",
+        "rep_pkg_last_release",
+        "deno_total_modules",
+    ]
+    cols = [c for c in preferred if c in df.columns] + [c for c in df.columns if c not in preferred]
+    return df[cols]
 
 # ========================= AGREGAÇÃO =========================
 
@@ -375,7 +644,6 @@ def plot_grouped_bars(df, metric, ic, out, ylabel, lang, thousands=False):
         FuncFormatter(_fmt_thousands if thousands else _fmt_decimal)
     )
 
-    # ====== RÓTULOS ACIMA DAS BARRAS ======
     fig.canvas.draw()
     y_max = ax.get_ylim()[1]
 
@@ -414,39 +682,65 @@ def plot_grouped_bars(df, metric, ic, out, ylabel, lang, thousands=False):
 def generate(root):
     log_info("Iniciando geração de relatório")
 
-    df = collect(root)
-    if df.empty:
-        log_error("Nenhum dado coletado. Abortando.")
+    perf_df, sec_df = collect(root)
+
+    if perf_df.empty and sec_df.empty:
+        log_error("Nenhum dado coletado (performance e segurança vazios). Abortando.")
         return
 
-    log_info(f"Amostras coletadas: {len(df)}")
+    if not perf_df.empty:
+        log_info(f"Amostras de performance coletadas: {len(perf_df)}")
 
-    summary = summarize(df)
-    log_info(
-        f"Resumo: {len(summary)} linhas | "
-        f"{summary['runtime'].nunique()} runtimes | "
-        f"{summary['vus'].nunique()} níveis de VUs"
-    )
+        summary = summarize(perf_df)
+        log_info(
+            f"Resumo: {len(summary)} linhas | "
+            f"{summary['runtime'].nunique()} runtimes | "
+            f"{summary['vus'].nunique()} níveis de VUs"
+        )
 
-    out = Path(root) / "plots"
-    out.mkdir(exist_ok=True)
+        out = Path(root) / "plots"
+        out.mkdir(exist_ok=True)
 
-    for lang in ("pt", "en"):
-        log_info(f"Gerando gráficos ({lang})")
-        plot_grouped_bars(summary, "lat_p95_mean", "lat_p95_ic95",
-                          out / "p95_latency", I18N[lang]["p95_latency"], lang)
-        plot_grouped_bars(summary, "lat_mean_mean", "lat_mean_ic95",
-                          out / "mean_latency", I18N[lang]["mean_latency"], lang)
-        plot_grouped_bars(summary, "throughput_mean", "throughput_ic95",
-                          out / "throughput", I18N[lang]["throughput"], lang, True)
-        plot_grouped_bars(summary, "cpu_mean", "cpu_ic95",
-                          out / "mean_cpu_usage", I18N[lang]["cpu"], lang)
-        plot_grouped_bars(summary, "memory_mean", "memory_ic95",
-                          out / "mean_memory_usage", I18N[lang]["memory"], lang, True)
+        for lang in ("pt", "en"):
+            log_info(f"Gerando gráficos ({lang})")
+            plot_grouped_bars(summary, "lat_p95_mean", "lat_p95_ic95",
+                              out / "p95_latency", I18N[lang]["p95_latency"], lang)
+            plot_grouped_bars(summary, "lat_mean_mean", "lat_mean_ic95",
+                              out / "mean_latency", I18N[lang]["mean_latency"], lang)
+            plot_grouped_bars(summary, "throughput_mean", "throughput_ic95",
+                              out / "throughput", I18N[lang]["throughput"], lang, True)
+            plot_grouped_bars(summary, "cpu_mean", "cpu_ic95",
+                              out / "mean_cpu_usage", I18N[lang]["cpu"], lang)
+            plot_grouped_bars(summary, "memory_mean", "memory_ic95",
+                              out / "mean_memory_usage", I18N[lang]["memory"], lang, True)
 
-    summary_csv = Path(root) / "results_summary.csv"
-    summary.to_csv(summary_csv, index=False)
-    log_info(f"Resumo salvo em {summary_csv}")
+        summary_csv = Path(root) / "results_summary.csv"
+        summary.to_csv(summary_csv, index=False)
+        log_info(f"Resumo salvo em {summary_csv}")
+    else:
+        log_warn("Nenhum dado de performance válido encontrado; pulando geração de gráficos/resumo de performance.")
+
+    # ========================= salvar CSV de segurança =========================
+    if not sec_df.empty:
+        cols = list(sec_df.columns)
+        preferred = ["runtime", "vus", "rep", "result_path", "monitor_duration", "cpu", "memory"]
+        others = [c for c in cols if c not in preferred]
+        ordered = [c for c in preferred if c in cols] + sorted(others)
+        sec_df = sec_df[ordered]
+        security_csv = Path(root) / "security_results.csv"
+        sec_df.to_csv(security_csv, index=False)
+        log_info(f"Resultados de segurança salvos em {security_csv} ({len(sec_df)} linhas)")
+    else:
+        log_info("Nenhum resultado de segurança encontrado; pulando CSV de segurança.")
+
+    # ========================= salvar CSV do ECOSSISTEMA =========================
+    eco_df = collect_ecosystem(root)
+    if not eco_df.empty:
+        eco_csv = Path(root) / "ecosystem_results.csv"
+        eco_df.to_csv(eco_csv, index=False)
+        log_info(f"Resultados do ecossistema salvos em {eco_csv} ({len(eco_df)} runtimes)")
+    else:
+        log_info("Nenhum dado de ecossistema encontrado; pulando CSV do ecossistema.")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

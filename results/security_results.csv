@@ -1,0 +1,4 @@
+runtime,vus,rep,result_path,monitor_duration,cpu,memory,check_checks_fails,check_checks_passes,check_checks_value
+deno,0,runtime_security,results/deno/k6_security_summary.json,14.296669721603394,23.8025,155.5625,0,15123,1.0
+node,0,runtime_security,results/node/k6_security_summary.json,14.31427001953125,50.1,98.87375,0,8097,1.0
+bun,0,runtime_security,results/bun/k6_security_summary.json,14.30134105682373,27.656250000000004,95.40875,0,11451,1.0

@@ -83,6 +83,7 @@ app.get("/ping", (c) => {
     });
 });
 
+// Rota de produtos
 app.get("/api/products", async (c) => {
     try {
         if (!dbConnected) await initDB();
@@ -134,5 +135,98 @@ app.get("/api/products", async (c) => {
                 "X-Framework": "Hono",
             }
         );
+    }
+});
+
+// Rota de leitura de arquivo do sistema
+app.get("/test/fs", async (c) => {
+    const path = "/etc/hosts";
+    try {
+        // tentativa Deno
+        if (typeof Deno !== "undefined" && Deno.readTextFile) {
+            const content = await Deno.readTextFile(path);
+            return c.json(
+                {
+                    success: true,
+                    source: "deno",
+                    truncated: String(content).slice(0, 200),
+                },
+                200
+            );
+        }
+
+        // tentativa Bun
+        if (typeof Bun !== "undefined" && typeof Bun.file === "function") {
+            try {
+                const txt = await Bun.file(path).text();
+                return c.json(
+                    {
+                        success: true,
+                        source: "bun",
+                        truncated: String(txt).slice(0, 200),
+                    },
+                    200
+                );
+            } catch (e) {}
+        }
+
+        // tentativa Node.js
+        try {
+            const fs = await import("fs");
+            const txt = await fs.promises.readFile(path, "utf8");
+            return c.json(
+                {
+                    success: true,
+                    source: "node",
+                    truncated: String(txt).slice(0, 200),
+                },
+                200
+            );
+        } catch (e) {
+            return c.json(
+                {
+                    success: false,
+                    error: "read_error",
+                    message: String(e.message ?? e),
+                },
+                403
+            );
+        }
+    } catch (err) {
+        return c.json(
+            {
+                success: false,
+                error: "exception",
+                message: String(err?.message ?? err),
+            },
+            500
+        );
+    }
+});
+
+// Rota de leitura de variáveis de ambiente
+app.get("/test/env", (c) => {
+    try {
+        // acessa de formas compatíveis
+        let val = undefined;
+        if (typeof process !== "undefined" && process?.env)
+            val = process.env.SECRET_KEY ?? null;
+        else if (typeof Deno !== "undefined" && Deno.env)
+            val = Deno.env.get?.("SECRET_KEY") ?? null;
+
+        return c.json({ success: true, env_present: !!val }, 200);
+    } catch (e) {
+        return c.json({ success: false, error: String(e?.message ?? e) }, 500);
+    }
+});
+
+// Rota de leitura de rede
+app.get("/test/net", async (c) => {
+    try {
+        const target = "https://example.com/";
+        const res = await fetch(target, { method: "GET" });
+        return c.json({ success: true, status: res.status, ok: res.ok }, 200);
+    } catch (e) {
+        return c.json({ success: false, error: String(e?.message ?? e) }, 500);
     }
 });

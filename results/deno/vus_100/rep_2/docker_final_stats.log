@@ -1,2 +1,2 @@
-CONTAINER ID   NAME              CPU %     MEM USAGE / LIMIT   MEM %     NET I/O          BLOCK I/O    PIDS
-f4b6baf9d4d3   deno_test_100_2   0.00%     111.2MiB / 1GiB     10.86%    3.09GB / 338MB   0B / 5.7MB   28
+CONTAINER ID   NAME              CPU %     MEM USAGE / LIMIT   MEM %     NET I/O         BLOCK I/O    PIDS
+44a4c30287a9   deno_test_100_2   0.01%     97.82MiB / 512MiB   19.11%    3.1GB / 339MB   0B / 5.7MB   28

@@ -1,2 +1,2 @@
 CONTAINER ID   NAME             CPU %     MEM USAGE / LIMIT   MEM %     NET I/O          BLOCK I/O   PIDS
-c2390a2d0e2f   bun_test_200_1   0.28%     81.84MiB / 1GiB     7.99%     3.12GB / 333MB   0B / 0B     22
+3a68404a475e   bun_test_200_1   0.28%     77.95MiB / 512MiB   15.22%    3.12GB / 332MB   0B / 0B     20

@@ -14,19 +14,19 @@
 [0m[32mDownload[0m https://registry.npmjs.org/postgres-interval
 [0m[32mDownload[0m https://registry.npmjs.org/split2
 [0m[32mDownload[0m https://registry.npmjs.org/xtend
-[0m[32mDownload[0m https://registry.npmjs.org/hono/-/hono-4.11.2.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pg/-/pg-8.16.3.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/pg-protocol/-/pg-protocol-1.10.3.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/hono/-/hono-4.11.3.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.9.1.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pg-pool/-/pg-pool-3.10.1.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/pg-types/-/pg-types-2.2.0.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/pg-protocol/-/pg-protocol-1.10.3.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pg-cloudflare/-/pg-cloudflare-1.2.7.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/pg-types/-/pg-types-2.2.0.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pgpass/-/pgpass-1.0.5.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/postgres-bytea/-/postgres-bytea-1.0.1.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/postgres-interval/-/postgres-interval-1.2.0.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/postgres-array/-/postgres-array-2.0.0.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/postgres-date/-/postgres-date-1.0.7.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pg-int8/-/pg-int8-1.0.1.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/postgres-array/-/postgres-array-2.0.0.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/postgres-bytea/-/postgres-bytea-1.0.1.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/postgres-interval/-/postgres-interval-1.2.0.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/split2/-/split2-4.2.0.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz
 [0m[32mTask[0m [0m[36mstart[0m deno run --allow-net --allow-env --allow-read --unstable src/server.js
@@ -37,3 +37,343 @@ Servidor iniciando na porta 3000
 Listening on http://0.0.0.0:3000/ (http://localhost:3000/)
 Deno -> http://localhost:3000
 [deno] Conectado ao banco com sucesso
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: timeout exceeded when trying to connect
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at Object.runMicrotasks (ext:core/01_core.js:730:26)
+    at Array.processTicksAndRejections (ext:deno_node/_next_tick.ts:59:10)
+    at eventLoopTick (ext:core/01_core.js:228:31)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+[deno] Erro na rota /api/products: Error: timeout exceeded when trying to connect
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at Object.runMicrotasks (ext:core/01_core.js:730:26)
+    at Array.processTicksAndRejections (ext:deno_node/_next_tick.ts:59:10)
+    at eventLoopTick (ext:core/01_core.js:228:31)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12
+[deno] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at file:///deno-dir/npm/registry.npmjs.org/pg-pool/3.10.1/index.js:45:11
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async mapped (ext:deno_http/00_serve.ts:360:18)
+Caused by Error: Connection terminated unexpectedly
+    at Connection.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/client.js:136:73)
+    at Object.onceWrapper (ext:deno_node/_events.mjs:559:14)
+    at Connection.emit (ext:deno_node/_events.mjs:436:20)
+    at Socket.<anonymous> (file:///deno-dir/npm/registry.npmjs.org/pg/8.16.3/lib/connection.js:62:12)
+    at Socket.emit (ext:deno_node/_events.mjs:436:20)
+    at node:net:1036:12

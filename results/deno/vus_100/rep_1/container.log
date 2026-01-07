@@ -14,20 +14,20 @@
 [0m[32mDownload[0m https://registry.npmjs.org/postgres-interval
 [0m[32mDownload[0m https://registry.npmjs.org/split2
 [0m[32mDownload[0m https://registry.npmjs.org/xtend
-[0m[32mDownload[0m https://registry.npmjs.org/hono/-/hono-4.11.2.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pg/-/pg-8.16.3.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/hono/-/hono-4.11.3.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.9.1.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pgpass/-/pgpass-1.0.5.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/pg-protocol/-/pg-protocol-1.10.3.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pg-pool/-/pg-pool-3.10.1.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pg-types/-/pg-types-2.2.0.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/pg-connection-string/-/pg-connection-string-2.9.1.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/pg-cloudflare/-/pg-cloudflare-1.2.7.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/pg-protocol/-/pg-protocol-1.10.3.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/split2/-/split2-4.2.0.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/pg-int8/-/pg-int8-1.0.1.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/postgres-array/-/postgres-array-2.0.0.tgz
-[0m[32mDownload[0m https://registry.npmjs.org/postgres-date/-/postgres-date-1.0.7.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/postgres-interval/-/postgres-interval-1.2.0.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/postgres-date/-/postgres-date-1.0.7.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/postgres-array/-/postgres-array-2.0.0.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/postgres-bytea/-/postgres-bytea-1.0.1.tgz
+[0m[32mDownload[0m https://registry.npmjs.org/pg-int8/-/pg-int8-1.0.1.tgz
 [0m[32mDownload[0m https://registry.npmjs.org/xtend/-/xtend-4.0.2.tgz
 [0m[32mTask[0m [0m[36mstart[0m deno run --allow-net --allow-env --allow-read --unstable src/server.js
 [0m[33mWarning[0m The `--unstable` flag has been removed in Deno 2.0. Use granular `--unstable-*` flags instead.

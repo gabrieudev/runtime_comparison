@@ -1,2 +1,2 @@
-CONTAINER ID   NAME              CPU %     MEM USAGE / LIMIT   MEM %     NET I/O          BLOCK I/O   PIDS
-58df7737bf76   node_test_200_1   0.00%     60.32MiB / 1GiB     5.89%     3.15GB / 359MB   0B / 0B     11
+CONTAINER ID   NAME              CPU %     MEM USAGE / LIMIT   MEM %     NET I/O          BLOCK I/O    PIDS
+5f4b9ee49721   node_test_200_1   0.01%     54.7MiB / 512MiB    10.68%    2.76GB / 315MB   4.1kB / 0B   11

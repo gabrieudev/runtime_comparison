@@ -2,3 +2,228 @@
 Servidor iniciando na porta 3000
 Node -> http://localhost:3000
 [node] Conectado ao banco com sucesso
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
+[node] Erro na rota /api/products: Error: Connection terminated due to connection timeout
+    at /app/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async getRandomProducts (file:///app/src/app.js:61:20)
+    at async Array.<anonymous> (file:///app/src/app.js:107:24)
+    at async responseViaResponseObject (file:///app/node_modules/@hono/node-server/dist/index.mjs:412:13)
+    at async Server.<anonymous> (file:///app/node_modules/@hono/node-server/dist/index.mjs:551:14) {
+  [cause]: Error: Connection terminated unexpectedly
+      at Connection.<anonymous> (/app/node_modules/pg/lib/client.js:136:73)
+      at Object.onceWrapper (node:events:638:28)
+      at Connection.emit (node:events:524:28)
+      at Socket.<anonymous> (/app/node_modules/pg/lib/connection.js:62:12)
+      at Socket.emit (node:events:524:28)
+      at TCP.<anonymous> (node:net:343:12)
+}
