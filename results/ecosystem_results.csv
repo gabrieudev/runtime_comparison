@@ -1,4 +1,4 @@
 runtime,github_full_name,github_stars,github_forks,github_watchers,github_open_issues,github_pushed_at,npm_total_packages,deno_total_modules,github_updated_at
-deno,denoland/deno,105749,5851,1384,2579,2026-01-06 19:49:58+00:00,,20.0,2026-01-07 03:20:58+00:00
+deno,denoland/deno,105757,5856,1383,2560,2026-01-09 21:36:57+00:00,,7738.0,2026-01-09 21:09:43+00:00
 node,nodejs/node,115074,34273,2965,2422,2026-01-06 16:15:30+00:00,3750895.0,,2026-01-06 23:40:30+00:00
 bun,oven-sh/bun,86021,3898,595,5583,2026-01-07 03:06:01+00:00,3751082.0,,2026-01-07 03:22:09+00:00

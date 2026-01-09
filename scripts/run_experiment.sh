@@ -7,7 +7,7 @@ MEM="${MEM:-512m}"
 MEM_SWAP="${MEM_SWAP:-512m}"
 REPS="${REPS:-2}"
 VUS_LIST=(50 100 200)
-DURATION="${DURATION:-1800s}"
+DURATION="${DURATION:-40s}"
 OUTDIR="results"
 
 K6_IMAGE="grafana/k6:latest"
@@ -141,16 +141,24 @@ for i in "${!runtimes[@]}"; do
     fi
     
     if [ "$rt" = "deno" ]; then
-        echo "- deno.land/x: lista de módulos"
-        curl -s "https://deno.land/x" \
-        | grep -oE 'href="/x/[^"]+"' \
-        | sed 's/href="\/x\///;s/"//' \
-        | sort -u \
-        > "$ECO_DIR/deno_modules.txt"
+        echo "- deno.land/x: total de módulos"
         
-        wc -l "$ECO_DIR/deno_modules.txt" \
-        | awk '{print $1}' \
-        > "$ECO_DIR/deno_total_modules.txt"
+        if ! command -v htmlq >/dev/null 2>&1; then
+            echo "  ERRO: htmlq não está instalado."
+            echo "" > "$ECO_DIR/deno_total_modules.txt"
+        else
+            DENO_TOTAL=$(curl -s https://deno.land/x \
+                | htmlq 'span.font-bold:nth-child(3)' -t \
+            | tr -d '[:space:]')
+            
+            if [[ "$DENO_TOTAL" =~ ^[0-9]+$ ]]; then
+                echo "$DENO_TOTAL" > "$ECO_DIR/deno_total_modules.txt"
+                echo "  total de módulos Deno: $DENO_TOTAL"
+            else
+                echo "  aviso: falha ao extrair total de módulos do Deno"
+                echo "" > "$ECO_DIR/deno_total_modules.txt"
+            fi
+        fi
     fi
     
     echo "Ecossistema coletado em $ECO_DIR"

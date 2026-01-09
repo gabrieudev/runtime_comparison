@@ -5,7 +5,7 @@ const WARMUP_SECONDS = 30;
 
 export let options = {
     vus: __ENV.VUS ? parseInt(__ENV.VUS) : 50,
-    duration: __ENV.DURATION ? __ENV.DURATION : "1800s",
+    duration: __ENV.DURATION ? __ENV.DURATION : "40s",
     thresholds: {
         http_req_duration: ["p(95)<2000"],
     },
