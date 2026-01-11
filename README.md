@@ -3,6 +3,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E" alt="JS">
   <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" alt="TS">
+  <img src="https://img.shields.io/badge/hono-%23E36002.svg?style=for-the-badge&logo=hono&logoColor=white" alt="Hono">
   <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white" alt="Node">
   <img src="https://img.shields.io/badge/Bun-%23000000.svg?style=for-the-badge&logo=bun&logoColor=white" alt="Bun">
   <img src="https://img.shields.io/badge/deno%20js-000000?style=for-the-badge&logo=deno&logoColor=white" alt="Deno">
@@ -15,10 +16,14 @@
 
 <h3>Pré-requisitos</h3>
 
--   Linux
+-   Linux (qualquer distro)
 -   [Docker](https://docs.docker.com/get-started/)
+-   [Docker Compose](https://docs.docker.com/compose/install/)
 -   [Git](https://git-scm.com/downloads)
--   [Python (Opcional)](https://www.python.org/doc/)
+-   [Python](https://www.python.org/doc/)
+-   [jq](https://jqlang.org/download/)
+-   [curl](https://curl.se/download.html)
+-   [htmlq](https://pypi.org/project/htmlq/)
 
 <h3>Clonando</h3>
 
@@ -41,15 +46,15 @@ chmod +x scripts/*.sh
 ./scripts/run_experiment.sh
 ```
 
-> ATENÇÃO: A execução completa do experimento durará cerca de 13 horas e 30 minutos.
+> ATENÇÃO: A execução completa do experimento durará cerca de 9 horas.
 
-<h3>Gerar gráficos (opcional)</h3>
+<h3>Plotagem e resultados</h3>
 
-Após a execução completa, todos os resultados estarão armazenados em `/results` em formato JSON. Caso queira gerar os gráficos automaticamente via script Python, execute os comandos abaixo e as imagens serão geradas dentro de `/results/plots`.
+Após a execução completa, todos os resultados estarão armazenados em `/results` em formatos json, txt e csv. Para gerar os gráficos e tabelas automaticamente via script Python, execute os comandos abaixo e as imagens serão geradas dentro de `/results/plots`.
 
 ```bash
 # Instala dependências necessárias
-pip install pandas numpy scipy matplotlib python-dateutil
+pip install -r requirements.txt
 
 # Executa script
 python3 scripts/generate_report.py results
